@@ -1,0 +1,9 @@
+# Node.js (React frontend)
+frontend/node_modules/
+frontend/build/
+
+# Java (Spring Boot backend)
+task_management_backend/target/
+task_management_backend/.mvn/
+task_management_backend/logs/
+ 

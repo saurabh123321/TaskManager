@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 
-const TaskModal = ({ closeModal }) => {
+const TaskModal = ({ closeModal, refreshTasks }) => {
   const [task, setTask] = useState({
     title: "",
     description: "",
@@ -20,14 +20,11 @@ const TaskModal = ({ closeModal }) => {
     const token = localStorage.getItem("jwt"); // Get token from localStorage (or context)
 
     try {
-      await axios.post("http://localhost:8080/api/tasks", task, {
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // Pass JWT Token
-        }
+      await api.post("/api/tasks", task, {
+        headers: { "Content-Type": "application/json" }
       });
-
       alert("Task added successfully!");
+      refreshTasks();
       closeModal(); // Close modal after submission
     } catch (error) {
       console.error("Error adding task:", error);
@@ -48,9 +45,9 @@ const TaskModal = ({ closeModal }) => {
             <option value="Low" selected>Low</option>
           </select>
           <select name="status" onChange={handleChange} className="w-full p-2 border rounded">
-            <option value="High" selected>To Do</option>
-            <option value="Medium">In Progress</option>
-            <option value="Low">Completed</option>
+            <option value="To Do" selected>To Do</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
           </select>
           <input type="text" name="assignee" placeholder="Assignee" onChange={handleChange} className="w-full p-2 border rounded" />
           <div className="flex justify-end gap-2">

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";
 import TaskColumn from "../components/TaskColumn";
 import TaskModal from "../components/TaskModal";
+import api from "../api/axios";
 
 const TasksPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,6 +11,25 @@ const TasksPage = () => {
       inProgress: [],
       completed: [],
     });
+    const fetchTasks = async () => {
+        try {
+            const response = await api.get("/api/tasks");
+            const fetchedTasks = response.data;
+            console.log("Fetched tasks:", fetchedTasks);
+            const categorizedTasks = {
+                todo: fetchedTasks.filter((task) => task.status === "To Do"),
+                inProgress: fetchedTasks.filter((task) => task.status === "In Progress"),
+                completed: fetchedTasks.filter((task) => task.status === "Completed")
+
+            }
+            setTasks(categorizedTasks);              
+        }catch (error) {
+            console.error("Error fetching tasks:", error);
+        }        
+    };
+    useEffect(() => {        
+        fetchTasks();
+    }, []); 
 
     return(
         <div className="flex h-screen bg-gray-100">
@@ -33,7 +53,7 @@ const TasksPage = () => {
                 </div>
 
                 {/* Task Modal */}
-                {isModalOpen && <TaskModal closeModal={() => setIsModalOpen(false)} />}
+                {isModalOpen && <TaskModal closeModal={() => setIsModalOpen(false)} refreshTasks={fetchTasks} />}
             </main>
             
         </div>         
